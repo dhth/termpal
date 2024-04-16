@@ -26,4 +26,6 @@ echo '#fb4934\n#83a598\n#d3869b' | termpal
 termpal -colors='#fb4934,#83a598,#d3869b'
 # or
 termpal -colors='#fb4934, #83a598, #d3869b'
+# or
+cat colors.txt | termpal -foreground='#3c3836'
 ```
