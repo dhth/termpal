@@ -14,9 +14,11 @@ import (
 var (
 	foreground = flag.String("fgc", "#282828", "hex color to use for foreground")
 	colorsFl   = flag.String("c", "", "space separated list of hex colors")
-	one        = flag.Bool("1", false, "to print in a single column")
+	one        = flag.Bool("1", false, "to print in a one column")
 	bg         = flag.Bool("bg", true, "show usage as a background color")
 	fg         = flag.Bool("fg", false, "show usage as a foreground color")
+	txt        = flag.String("txt", "", "text to show in color")
+	cols       = flag.Int("cols", 8, "number of columns to show")
 )
 
 func die(msg string, args ...any) {
@@ -24,16 +26,16 @@ func die(msg string, args ...any) {
 	os.Exit(1)
 }
 
-const (
-	colorsPerRow = 8
-)
-
 func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "%s\nFlags:\n", "termpal shows you how colors will look in your terminal.\n")
 		flag.PrintDefaults()
 	}
 	flag.Parse()
+
+	if *one {
+		*cols = 1
+	}
 
 	hexRegex := regexp.MustCompile(`^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$`)
 
@@ -71,26 +73,25 @@ func main() {
 		PaddingRight(1)
 
 	var counter int
+	text := *txt
 
 	if *bg {
 		fmt.Printf("\n")
 		for _, color := range colors {
-			if *one {
-				fmt.Printf("%s\n",
-					bgStyle.Copy().Background(lipgloss.Color(color)).Render(color),
-				)
-			} else {
-				fmt.Printf("%s\t",
-					bgStyle.Copy().Background(lipgloss.Color(color)).Render(color),
-				)
-				counter++
-				if counter >= colorsPerRow {
-					fmt.Println()
-					counter = 0
-				}
+			if *txt == "" {
+				text = color
+			}
+
+			fmt.Printf("%s        ",
+				bgStyle.Copy().Background(lipgloss.Color(color)).Render(text),
+			)
+			counter++
+			if counter >= *cols {
+				fmt.Println()
+				counter = 0
 			}
 		}
-		if !*one {
+		if *cols > 1 {
 			fmt.Printf("\n")
 		}
 	}
@@ -99,23 +100,21 @@ func main() {
 		fmt.Printf("\n")
 		counter = 0
 		for _, color := range colors {
-			if *one {
-				fmt.Printf("%s\n",
-					fgStyle.Copy().Foreground(lipgloss.Color(color)).Render(color),
-				)
-			} else {
-				fmt.Printf("%s\t",
-					fgStyle.Copy().Foreground(lipgloss.Color(color)).Render(color),
-				)
-				counter++
-				if counter >= colorsPerRow {
-					fmt.Println()
-					counter = 0
-				}
+			if *txt == "" {
+				text = color
+			}
+
+			fmt.Printf("%s        ",
+				fgStyle.Copy().Foreground(lipgloss.Color(color)).Render(text),
+			)
+			counter++
+			if counter >= *cols {
+				fmt.Println()
+				counter = 0
 			}
 		}
 	}
-	if !*one {
+	if *cols > 1 {
 		fmt.Printf("\n")
 	}
 }

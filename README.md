@@ -28,13 +28,17 @@ termpal -colors='#fb4934 #83a598 #d3869b'
 
 ```
 Flags:
-  -1    to print in a single column
+  -1    to print in a one column
   -bg
         show usage as a background color (default true)
   -c string
         space separated list of hex colors
+  -cols int
+        number of columns to show (default 8)
   -fg
         show usage as a foreground color
   -fgc string
         hex color to use for foreground (default "#282828")
+  -txt string
+        text to show in color
 ```
