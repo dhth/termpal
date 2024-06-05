@@ -12,8 +12,11 @@ import (
 )
 
 var (
-	foreground = flag.String("foreground", "#282828", "hex color to use for foreground")
-	colorsFl   = flag.String("colors", "", "comma separated list of hex colors")
+	foreground = flag.String("fgc", "#282828", "hex color to use for foreground")
+	colorsFl   = flag.String("c", "", "space separated list of hex colors")
+	one        = flag.Bool("1", false, "to print in a single column")
+	bg         = flag.Bool("bg", true, "show usage as a background color")
+	fg         = flag.Bool("fg", false, "show usage as a foreground color")
 )
 
 func die(msg string, args ...any) {
@@ -35,7 +38,7 @@ func main() {
 	hexRegex := regexp.MustCompile(`^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$`)
 
 	if !hexRegex.MatchString(*foreground) {
-		die("foreground is not valid regex")
+		die("fgc is not valid regex")
 	}
 	var colors []string
 
@@ -49,7 +52,7 @@ func main() {
 			}
 		}
 	} else {
-		colorsEls := strings.Split(*colorsFl, ",")
+		colorsEls := strings.Split(*colorsFl, " ")
 		for _, col := range colorsEls {
 			colSt := strings.TrimSpace(col)
 			if hexRegex.MatchString(colSt) {
@@ -69,31 +72,50 @@ func main() {
 
 	var counter int
 
-	fmt.Printf("\n")
-
-	for _, color := range colors {
-		fmt.Printf("%s\t",
-			bgStyle.Copy().Background(lipgloss.Color(color)).Render(color),
-		)
-		counter++
-		if counter >= colorsPerRow {
-			fmt.Println()
-			counter = 0
+	if *bg {
+		fmt.Printf("\n")
+		for _, color := range colors {
+			if *one {
+				fmt.Printf("%s\n",
+					bgStyle.Copy().Background(lipgloss.Color(color)).Render(color),
+				)
+			} else {
+				fmt.Printf("%s\t",
+					bgStyle.Copy().Background(lipgloss.Color(color)).Render(color),
+				)
+				counter++
+				if counter >= colorsPerRow {
+					fmt.Println()
+					counter = 0
+				}
+			}
+		}
+		if !*one {
+			fmt.Printf("\n")
 		}
 	}
 
-	fmt.Printf("\n\n\n")
-
-	counter = 0
-	for _, color := range colors {
-		fmt.Printf("%s\t",
-			fgStyle.Copy().Foreground(lipgloss.Color(color)).Render(color),
-		)
-		counter++
-		if counter >= colorsPerRow {
-			fmt.Println()
-			counter = 0
+	if *fg {
+		fmt.Printf("\n")
+		counter = 0
+		for _, color := range colors {
+			if *one {
+				fmt.Printf("%s\n",
+					fgStyle.Copy().Foreground(lipgloss.Color(color)).Render(color),
+				)
+			} else {
+				fmt.Printf("%s\t",
+					fgStyle.Copy().Foreground(lipgloss.Color(color)).Render(color),
+				)
+				counter++
+				if counter >= colorsPerRow {
+					fmt.Println()
+					counter = 0
+				}
+			}
 		}
 	}
-	fmt.Printf("\n")
+	if !*one {
+		fmt.Printf("\n")
+	}
 }

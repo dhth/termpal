@@ -23,9 +23,18 @@ go install github.com/dhth/termpal@latest
 ```bash
 echo '#fb4934\n#83a598\n#d3869b' | termpal
 # or
-termpal -colors='#fb4934,#83a598,#d3869b'
-# or
-termpal -colors='#fb4934, #83a598, #d3869b'
-# or
-cat colors.txt | termpal -foreground='#3c3836'
+termpal -colors='#fb4934 #83a598 #d3869b'
+```
+
+```
+Flags:
+  -1    to print in a single column
+  -bg
+        show usage as a background color (default true)
+  -c string
+        space separated list of hex colors
+  -fg
+        show usage as a foreground color
+  -fgc string
+        hex color to use for foreground (default "#282828")
 ```
